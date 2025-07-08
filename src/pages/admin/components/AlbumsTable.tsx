@@ -5,18 +5,20 @@ import { useMusicStore } from "@/stores/useMusicStore";
 import { useAuth } from "@clerk/clerk-react";
 import { Calendar, Music, Trash2 } from "lucide-react";
 import { useEffect } from "react";
+import toast from "react-hot-toast";
 
 const AlbumsTable = () => {
 	const {getToken} = useAuth();
-	const { albums, deleteAlbum, fetchAlbums } = useMusicStore();
+	const { albums, deleteAlbum, fetchAlbums, fetchStats } = useMusicStore();
 
 	const handleClick = async (id: string) => {
 			try {
 				const token = await getToken({skipCache: true});
 				updateApiToken(token);
 				deleteAlbum(id);
-			} catch (error) {
-				console.log(error);
+				fetchStats();
+			} catch (error: any) {
+				toast.error("Failed to delete album :" + error.message);
 			}
 	}
 

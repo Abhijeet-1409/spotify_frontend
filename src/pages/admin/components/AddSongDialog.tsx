@@ -27,7 +27,7 @@ interface NewSong {
 
 const AddSongDialog = () => {
 	const { getToken } = useAuth();
-	const { albums } = useMusicStore();
+	const { albums, fetchStats, fetchSongs } = useMusicStore();
 	const [songDialogOpen, setSongDialogOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 
@@ -103,6 +103,12 @@ const AddSongDialog = () => {
 				image: null,
 			});
 			toast.success("Song added successfully");
+
+			const newToken: string | null = await getToken({skipCache:true});
+			updateApiToken(newToken);
+			fetchStats();
+			fetchSongs();
+
 		} catch (error: any) {
 			if (Array.isArray(error.response?.data?.detail)) {
 				error.response.data.detail.forEach((msg: string) => toast.error(msg));

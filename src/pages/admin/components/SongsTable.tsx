@@ -5,18 +5,20 @@ import { updateApiToken } from "@/lib/axios";
 import { useMusicStore } from "@/stores/useMusicStore";
 import { useAuth } from "@clerk/clerk-react";
 import { Calendar, Trash2 } from "lucide-react";
+import toast from "react-hot-toast";
 
 const SongsTable = () => {
 	const {getToken} = useAuth();
-	const { songs, isLoading, error, deleteSong } = useMusicStore();
+	const { songs, isLoading, error, deleteSong, fetchStats } = useMusicStore();
 
 	const handleClick = async (id: string) => {
 		try {
 			const token = await getToken({skipCache: true});
 			updateApiToken(token);
 			deleteSong(id);
-		} catch (error) {
-			console.log(error);
+			fetchStats();
+		} catch (error: any) {
+			toast.error("Failed to delete song :" + error.message);
 		}
 	}
 

@@ -13,6 +13,7 @@ import { axiosInstance, updateApiToken } from "@/lib/axios";
 import { Plus, Upload } from "lucide-react";
 import { useRef, useState } from "react";
 import { useAuth } from "@clerk/clerk-react";
+import { useMusicStore } from "@/stores/useMusicStore";
 import toast from "react-hot-toast";
 
 const AddAlbumDialog = () => {
@@ -20,6 +21,7 @@ const AddAlbumDialog = () => {
 	const [albumDialogOpen, setAlbumDialogOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
+	const { fetchStats, fetchAlbums} = useMusicStore();
 
 	const [newAlbum, setNewAlbum] = useState({
 		title: "",
@@ -78,6 +80,12 @@ const AddAlbumDialog = () => {
 			setImageFile(null);
 			setAlbumDialogOpen(false);
 			toast.success("Album created successfully");
+
+			const newToken: string | null = await getToken({skipCache:true});
+			updateApiToken(newToken);
+			fetchStats();
+			fetchAlbums();
+
 		} catch (error: any) {
 			if (Array.isArray(error.response?.data?.detail)) {
 				error.response.data.detail.forEach((msg: string) => toast.error(msg));
