@@ -51,7 +51,23 @@ const AddSongDialog = () => {
 
 		try {
 			if (!files.audio || !files.image) {
-				return toast.error("Please upload both audio and image files");
+				toast.error("Please upload both audio and image files");
+				return;
+			}
+
+			if(newSong.title.length == 0 || newSong.artist.length == 0){
+				let msg = '';
+				if (newSong.title.length == 0)
+					msg = 'Please add title ';
+				if (newSong.artist.length == 0)
+					msg += msg.length > 0 ? '& artist' : 'Please add artist';
+				toast.error(msg);
+				return;
+			}
+
+			if(Number(newSong.duration) == 0){
+				toast.error("Please add song duration in seconds");
+				return;
 			}
 
 			const formData = new FormData();
@@ -88,7 +104,11 @@ const AddSongDialog = () => {
 			});
 			toast.success("Song added successfully");
 		} catch (error: any) {
-			toast.error("Failed to add song: " + error.message);
+			if (Array.isArray(error.response?.data?.detail)) {
+				error.response.data.detail.forEach((msg: string) => toast.error(msg));
+			} else {
+				toast.error("Failed to create album: " + error.message);
+			}
 		} finally {
 			setIsLoading(false);
 		}

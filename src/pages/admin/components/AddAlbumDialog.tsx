@@ -41,7 +41,18 @@ const AddAlbumDialog = () => {
 
 		try {
 			if (!imageFile) {
-				return toast.error("Please upload an image");
+				toast.error("Please upload an image");
+				return;
+			}
+
+			if(newAlbum.title.length == 0 || newAlbum.artist.length == 0){
+				let msg = '';
+				if (newAlbum.title.length == 0)
+					msg = 'Please add title ';
+				if (newAlbum.artist.length == 0)
+					msg += msg.length > 0 ? '& artist' : 'Please add artist';
+				toast.error(msg);
+				return;
 			}
 
 			const formData = new FormData();
@@ -68,7 +79,11 @@ const AddAlbumDialog = () => {
 			setAlbumDialogOpen(false);
 			toast.success("Album created successfully");
 		} catch (error: any) {
-			toast.error("Failed to create album: " + error.message);
+			if (Array.isArray(error.response?.data?.detail)) {
+				error.response.data.detail.forEach((msg: string) => toast.error(msg));
+			} else {
+				toast.error("Failed to create album: " + error.message);
+			}
 		} finally {
 			setIsLoading(false);
 		}
@@ -149,7 +164,7 @@ const AddAlbumDialog = () => {
 					<Button
 						onClick={handleSubmit}
 						className='bg-violet-500 hover:bg-violet-600'
-						disabled={isLoading || !imageFile || !newAlbum.title || !newAlbum.artist}
+						disabled={isLoading}
 					>
 						{isLoading ? "Creating..." : "Add Album"}
 					</Button>
