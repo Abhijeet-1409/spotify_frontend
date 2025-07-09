@@ -12,6 +12,9 @@ interface MusicStore {
 	featuredSongs: Song[];
 	madeForYouSongs: Song[];
 	trendingSongs: Song[];
+	searchSongResult: Song[];
+	searchAlbumResult: Album[];
+	hasSearched: boolean;
 	stats: Stats;
 
 	fetchAlbums: () => Promise<void>;
@@ -23,6 +26,9 @@ interface MusicStore {
 	fetchSongs: () => Promise<void>;
 	deleteSong: (id: string) => Promise<void>;
 	deleteAlbum: (id: string) => Promise<void>;
+	searchSong: (name: string) => Promise<void>;
+	searchAlbum: (name: string) => Promise<void>;
+	setHasSearched: (value: boolean) => void;
 }
 
 export const useMusicStore = create<MusicStore>((set) => ({
@@ -34,6 +40,9 @@ export const useMusicStore = create<MusicStore>((set) => ({
 	madeForYouSongs: [],
 	featuredSongs: [],
 	trendingSongs: [],
+	searchSongResult: [],
+	searchAlbumResult: [],
+	hasSearched: false,
 	stats: {
 		totalSongs: 0,
 		totalAlbums: 0,
@@ -160,4 +169,33 @@ export const useMusicStore = create<MusicStore>((set) => ({
 			set({ isLoading: false });
 		}
 	},
+
+	searchSong: async (name) => {
+		set({ isLoading: true, error: null});
+		try {
+			const response = await axiosInstance.get(`/songs/search/${name}`);
+			set({searchSongResult: response.data,});
+		} catch (error: any) {
+			set({ error: error.response.data.message});
+		} finally {
+			set({ isLoading: false });
+		}
+	},
+
+	searchAlbum: async (name) => {
+		set({ isLoading: true, error: null});
+		try {
+			const response = await axiosInstance.get(`/albums/search/${name}`);
+			set({searchAlbumResult: response.data,});
+		} catch (error: any) {
+			set({ error: error.response.data.message});
+		} finally {
+			set({ isLoading: false });
+		}
+	},
+
+	setHasSearched: (value) => {
+		set({ hasSearched: value});
+	}
+
 }));
