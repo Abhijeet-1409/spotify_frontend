@@ -58,8 +58,8 @@ const AddAlbumDialog = () => {
 			}
 
 			const formData = new FormData();
-			formData.append("title", newAlbum.title);
-			formData.append("artist", newAlbum.artist);
+			formData.append("title", newAlbum.title.trim());
+			formData.append("artist", newAlbum.artist.trim());
 			formData.append("releaseYear", newAlbum.releaseYear.toString());
 			formData.append("imageFile", imageFile);
 

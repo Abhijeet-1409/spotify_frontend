@@ -72,8 +72,8 @@ const AddSongDialog = () => {
 
 			const formData = new FormData();
 
-			formData.append("title", newSong.title);
-			formData.append("artist", newSong.artist);
+			formData.append("title", newSong.title.trim());
+			formData.append("artist", newSong.artist.trim());
 			formData.append("duration", newSong.duration);
 			if (newSong.album && newSong.album !== "none") {
 				formData.append("albumId", newSong.album);
